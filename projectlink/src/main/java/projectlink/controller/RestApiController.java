@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "GET")
 public class RestApiController {
 
-    @GetMapping("/hello")
+    @GetMapping("/home")
     public String hello() {
         return "Hello World";
     }
