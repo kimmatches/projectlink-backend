@@ -8,6 +8,7 @@ public class ProjectlinkApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProjectlinkApplication.class, args);
+		//test
 	}
 
 }
