@@ -45,11 +45,12 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(
-                authenticationManager(http),
-                appUserRepository
-        );
+        // Configure AuthenticationManager
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
+        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authenticationManager, appUserRepository);
         AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/api/v1/login", "POST");
         authenticationFilter.setRequiresAuthenticationRequestMatcher(requestMatcher);
 
@@ -61,18 +62,11 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/register").permitAll()
                         .anyRequest().authenticated()
                 )
+                .authenticationManager(authenticationManager) // Set the AuthenticationManager here
                 .addFilter(authenticationFilter)
                 .addFilterBefore(new CustomAuthorisationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder =
-                httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
-        return authenticationManagerBuilder.build();
     }
 
     @Bean
@@ -84,11 +78,5 @@ public class SecurityConfiguration {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
-    }
-
-    @Bean
-    public BCryptPasswordEncoder getPasswordEncoder()
-    {
-        return new BCryptPasswordEncoder();
     }
 }
