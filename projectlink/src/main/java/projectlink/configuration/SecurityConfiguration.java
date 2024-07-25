@@ -60,6 +60,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/login").permitAll()
                         .requestMatchers("/api/v1/register").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/my-api-docs/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationManager(authenticationManager) // Set the AuthenticationManager here
