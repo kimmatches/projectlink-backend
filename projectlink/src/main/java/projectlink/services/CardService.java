@@ -5,10 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import projectlink.models.Board;
 import projectlink.models.BoardList;
 import projectlink.models.Card;
+import projectlink.models.AppUser;
+
 import projectlink.repositories.CardRepository;
+import projectlink.repositories.BoardListRepository;
+import projectlink.repositories.BoardRepository;
+
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -23,10 +29,17 @@ import java.util.stream.Collectors;
 public class CardService {
 
     private final CardRepository cardRepository;
+    private final BoardListRepository boardListRepository;
+    private final BoardRepository boardRepository;
 
     @Autowired
-    public CardService(CardRepository cardRepository) {
+    public CardService(CardRepository cardRepository,
+                       BoardListRepository boardListRepository,
+                       BoardRepository boardRepository
+    ) {
         this.cardRepository = cardRepository;
+        this.boardListRepository = boardListRepository;
+        this.boardRepository = boardRepository;
     }
 
     public List<Card> getAllCards() {
@@ -45,6 +58,35 @@ public class CardService {
         return cardRepository.findCardsByBoardListId(listId);
     }
 
+    public Board createNewCard(String listId, String title, AppUser author) {
+        Optional<BoardList> boardList = boardListRepository.findById(listId);
+        if (boardList.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "List not found");
+        }
+        BoardList foundBoardList = boardList.get();
+        Card newCard = Card.builder()
+                .title(title)
+                .author(author)
+//                .boardList(foundBoardList)
+//                .board(foundBoardList.getBoard())
+                .build();
+        log.info("saving card for the first time");
+        Card savedCard = cardRepository.save(newCard);
+
+        foundBoardList.getCards().add(newCard);
+        log.info("saving list");
+        boardListRepository.save(foundBoardList);
+
+        savedCard.setBoardList(foundBoardList);
+        savedCard.setBoard(foundBoardList.getBoard());
+        log.info("saving card for the second time");
+        Card updatedCard = cardRepository.save(savedCard);
+        log.info("card board is {}", updatedCard.getBoard());
+
+        Board boardToUpdate = foundBoardList.getBoard();
+        return boardRepository.save(boardToUpdate);
+
+    }
     public Board updateCard(String cardId, Map<String, Object> patchUpdate) {
         Optional<Card> cardToFind = cardRepository.findById(cardId);
         if (cardToFind.isEmpty()) {
@@ -64,8 +106,7 @@ public class CardService {
         });
 
         Card savedCard = cardRepository.save(cardToUpdate);
-//        return boardRepository.getById(savedCard.getBoard().getId());
-        return null;
+        return boardRepository.getById(savedCard.getBoard().getId());
     }
 
     public Board deleteCard(String username, String cardId) {
@@ -84,15 +125,14 @@ public class CardService {
 
         cardRepository.deleteById(cardId);
 
-//        BoardList list = boardListRepository.getById(listId);
-//        List<Card> newCards = list.getCards().stream()
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
-//        list.setCards(newCards);
-//        boardListRepository.save(list);
+        BoardList list = boardListRepository.getById(listId);
+        List<Card> newCards = list.getCards().stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        list.setCards(newCards);
+        boardListRepository.save(list);
 
-//        Board board = boardRepository.getById(boardId);
-//        return board;
-        return null;
+        Board board = boardRepository.getById(boardId);
+        return board;
     }
 }

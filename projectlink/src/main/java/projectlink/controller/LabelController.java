@@ -23,6 +23,7 @@ public class LabelController {
     public Label createLabel(@RequestBody Label body) {
         return labelService.createLabel(body);
     }
+
     //라벨 업데이트
     @PutMapping
     public Label updateLabel(@RequestBody Label body) throws Exception {
