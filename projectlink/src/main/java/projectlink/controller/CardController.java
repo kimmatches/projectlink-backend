@@ -10,6 +10,7 @@ import projectlink.controller.helpers.URIFactory;
 import projectlink.models.AppUser;
 import projectlink.models.Board;
 import projectlink.models.Card;
+import projectlink.services.AppUserService;
 import projectlink.services.CardService;
 
 import java.net.URI;
@@ -19,17 +20,16 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/lists")
-@Tag(name = "CommentController", description = "CommentController")
+@Tag(name = "CardController", description = "CardController")
 public class CardController {
 
     private final CardService cardService;
-//    private final AppUserService appUserService;
+    private final AppUserService appUserService;
 
     @Autowired
-//    public CardController(CardService cardService, AppUserService appUserService) {
-    public CardController(CardService cardService) {
+    public CardController(CardService cardService, AppUserService appUserService) {
         this.cardService = cardService;
-//        this.appUserService = appUserService;
+        this.appUserService = appUserService;
     }
 
     @GetMapping("/cards")
@@ -54,10 +54,9 @@ public class CardController {
             @RequestBody NewCard newCard
     ) {
         URI uri = URIFactory.create();
-//        AppUser appUser = appUserService.getUserByUsername(principal.getName());
-//        Board board = cardService.createNewCard(listId, newCard.title, appUser);
-//        return ResponseEntity.created(uri).body(board);
-        return null;
+        AppUser appUser = appUserService.getUserByUsername(principal.getName());
+        Board board = cardService.createNewCard(listId, newCard.title, appUser);
+        return ResponseEntity.created(uri).body(board);
     }
 
     @PatchMapping(path = "/cards/{cardId}")

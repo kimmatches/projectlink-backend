@@ -5,9 +5,9 @@ import projectlink.models.Board;
 import projectlink.models.Card;
 
 import projectlink.repositories.BoardListRepository;
-/* import projectlink.repositories.BoardRepository;
+import projectlink.repositories.BoardRepository;
 import projectlink.repositories.CardRepository;
-import projectlink.repositories.CommentRepository; */
+import projectlink.repositories.CommentRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,22 +23,22 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class BoardListService {
-    //private final BoardRepository boardRepository;
+    private final BoardRepository boardRepository;
     private final BoardListRepository boardListRepository;
-    //private final CardRepository cardRepository;
-    //private final CommentRepository commentRepository;
+    private final CardRepository cardRepository;
+    private final CommentRepository commentRepository;
 
     @Autowired
     public BoardListService(
-            //BoardRepository boardRepository,
-            BoardListRepository boardListRepository
-            //CardRepository cardRepository,
-            //CommentRepository commentRepository
+            BoardRepository boardRepository,
+            BoardListRepository boardListRepository,
+            CardRepository cardRepository,
+            CommentRepository commentRepository
     ) {
-       //this.boardRepository = boardRepository;
-        this.boardListRepository = boardListRepository;
-       //this.cardRepository = cardRepository;
-        //this.commentRepository = commentRepository;
+       this.boardRepository = boardRepository;
+       this.boardListRepository = boardListRepository;
+       this.cardRepository = cardRepository;
+        this.commentRepository = commentRepository;
     }
 
     public BoardList getSingleBoardList(String listId) {
@@ -47,15 +47,13 @@ public class BoardListService {
     }
 
     public List<BoardList> getListsForSingleBoard(String boardId) {
-        /* Board board = boardRepository.getById(boardId);
+        Board board = boardRepository.getById(boardId);
         log.info(board.toString());
-        return boardListRepository.getBoardListByBoard(board); */
-
-        return List.of(); //임시로 빈 리스트 반환 (테스트 후 삭제 요망)
+        return boardListRepository.getBoardListByBoard(board);
     }
 
     public Board createBoardList(String boardId, BoardList newList) {
-        /* Optional<Board> optionalBoard = boardRepository.findById(boardId);
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
         if (optionalBoard.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found");
         }
@@ -64,25 +62,21 @@ public class BoardListService {
         newList.setCards(List.of());
         BoardList savedList = boardListRepository.save(newList);
         board.getLists().add(savedList);
-        return boardRepository.save(board);*/
-
-        return new Board(); //임시로 빈 Board 객체 반환(테스트 후 삭제 요망)
+        return boardRepository.save(board);
     }
 
     public Board updateBoardListTitle(String listId, String newTitle) throws Exception {
-        /* Optional<BoardList> boardList = boardListRepository.findById(listId);
+        Optional<BoardList> boardList = boardListRepository.findById(listId);
         if (boardList.isEmpty()) {
             throw new Exception("List does not exist");
         }
         boardList.ifPresent(list -> list.setTitle(newTitle));
         BoardList updatedList = boardListRepository.save(boardList.get());
-        return boardRepository.getById(updatedList.getBoard().getId()); */
-
-        return new Board(); //임시로 빈 Board 객체 반환(테스트 후 삭제 요망)
+        return boardRepository.getById(updatedList.getBoard().getId());
     }
 
     public Board deleteSingleBoardList(String listId) {
-        /* Optional<BoardList> optional = boardListRepository.findById(listId);
+        Optional<BoardList> optional = boardListRepository.findById(listId);
         if (optional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "List not found");
         }
@@ -98,9 +92,7 @@ public class BoardListService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         updatedBoard.setLists(newLists);
-        return boardRepository.save(updatedBoard); */
-
-        return new Board(); //임시로 빈 Board 객체 반환(테스트 후 삭제 요망)
+        return boardRepository.save(updatedBoard);
     }
 
     public List<BoardList> getAllBoardLists() {
@@ -108,7 +100,7 @@ public class BoardListService {
     }
 
     public Board updateBoardListCards(String boardId, String listId, List<Card> newCards) throws Exception {
-        /* System.out.println("IN SERVICE");
+        System.out.println("IN SERVICE");
         Optional<BoardList> boardList = boardListRepository.findById(listId);
         if (boardList.isEmpty()) {
             throw new Exception("List does not exist");
@@ -119,8 +111,6 @@ public class BoardListService {
         newCards.forEach(c -> c.setBoardList(listToUpdate));
         listToUpdate.setCards(newCards);
         boardListRepository.save(listToUpdate);
-        return boardRepository.getById(boardId); */
-
-        return new Board(); //임시로 빈 Board 객체 반환(테스트 후 삭제 요망)
+        return boardRepository.getById(boardId);
     }
 }

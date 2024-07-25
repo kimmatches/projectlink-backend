@@ -25,15 +25,18 @@ public class CommentController {
 
     // 댓글 조회
     @Operation(summary = "댓글 조회", description = "댓글을 조회 합니다.")
+
     @GetMapping("/comments/{id}")
     public Optional<Comment> getSingleComment(@PathVariable String id) {
         return commentService.getSingleComment(id);
     }
+
     // 새로운 댓글 생성
     @PostMapping("/{cardId}/comments")
     public Board createNewComment(Principal principal, @PathVariable String cardId, @RequestBody Comment comment) {
         return commentService.createNewComment(principal.getName(), cardId, comment);
     }
+
     // 댓글 업데이트
     @PutMapping("/comments/{commentId}")
     public Board updateComment(Principal principal, @PathVariable String commentId, @RequestBody Comment updatedComment) {
