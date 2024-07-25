@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import projectlink.models.AppUser;
 import projectlink.models.Board;
+import projectlink.models.BoardList;
 import projectlink.repositories.AppUserRepository;
 import projectlink.repositories.BoardRepository;
 
@@ -83,7 +84,7 @@ public class BoardService {
         boardRepository.deleteById(boardId);
     }
 
-    /*
+
     public Board updateBoard(String boardId, Board newBoard) {
         Board board = boardRepository.getById(boardId);
         List<BoardList> newLists = newBoard.getLists();
@@ -92,7 +93,6 @@ public class BoardService {
         board.setBoardName(newBoard.getBoardName());
         return boardRepository.save(board);
     }
-    */
 
     public Board starBoard(String boardId, AppUser appUser) {
         Board board = boardRepository.getById(boardId);
