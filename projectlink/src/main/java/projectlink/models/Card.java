@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -100,6 +101,9 @@ public class Card {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "card", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Collection<CardFile> cardFiles;
 
 //    @ManyToMany(
 //            fetch = FetchType.LAZY,

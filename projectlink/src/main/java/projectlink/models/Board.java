@@ -84,5 +84,4 @@ public class Board {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<AppUser> recentlyViewedBy;
-
 }
