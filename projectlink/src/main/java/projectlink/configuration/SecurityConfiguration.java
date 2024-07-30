@@ -50,7 +50,7 @@ public class SecurityConfiguration {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authenticationManager, appUserRepository);
+        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authenticationManager, appUserRepository, userDetailsService);
         AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/api/v1/login", "POST");
         authenticationFilter.setRequiresAuthenticationRequestMatcher(requestMatcher);
 

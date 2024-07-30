@@ -14,6 +14,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import projectlink.models.AppUser;
 import projectlink.repositories.AppUserRepository;
@@ -30,10 +32,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     private final AuthenticationManager authenticationManager;
     private final AppUserRepository appUserRepository;
+    private final UserDetailsService userDetailsService;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, AppUserRepository appUserRepository) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager,
+                                      AppUserRepository appUserRepository,
+                                      UserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.appUserRepository = appUserRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     //  When user tries to log in
@@ -44,7 +50,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Map<String, String> requestBody = new ObjectMapper().readValue(request.getInputStream(), typeReference);
         String username = requestBody.get("username");
         String password = requestBody.get("password");
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), password);
         return authenticationManager.authenticate(authenticationToken);
     }
 
