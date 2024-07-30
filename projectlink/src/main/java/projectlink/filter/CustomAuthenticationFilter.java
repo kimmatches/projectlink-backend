@@ -32,14 +32,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     private final AuthenticationManager authenticationManager;
     private final AppUserRepository appUserRepository;
-    private final UserDetailsService userDetailsService;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager,
-                                      AppUserRepository appUserRepository,
-                                      UserDetailsService userDetailsService) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, AppUserRepository appUserRepository) {
         this.authenticationManager = authenticationManager;
         this.appUserRepository = appUserRepository;
-        this.userDetailsService = userDetailsService;
     }
 
     //  When user tries to log in
@@ -51,9 +47,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String username = requestBody.get("username");
         String password = requestBody.get("password");
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), password);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         return authenticationManager.authenticate(authenticationToken);
     }
 
@@ -61,15 +55,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication
     ) throws IOException {
-        User user = (User) authentication.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         String accessToken = JWT.create()
-                .withSubject(user.getUsername())
+                .withSubject(authentication.getName())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
 
-        AppUser appUser = appUserRepository.findByUsername(user.getUsername());
+        AppUser appUser = appUserRepository.findByUsername(authentication.getName());
 
         Map<String, String> sessionDetails = new HashMap<>();
         sessionDetails.put("access_token", accessToken);

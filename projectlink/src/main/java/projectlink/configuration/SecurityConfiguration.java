@@ -50,7 +50,7 @@ public class SecurityConfiguration {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authenticationManager, appUserRepository, userDetailsService);
+        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authenticationManager, appUserRepository);
         AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/api/v1/login", "POST");
         authenticationFilter.setRequiresAuthenticationRequestMatcher(requestMatcher);
 
@@ -60,6 +60,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/login").permitAll()
                         .requestMatchers("/api/v1/register").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/my-api-docs/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
