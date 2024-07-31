@@ -69,6 +69,9 @@ public class BoardController {
         boardService.deleteBoard(boardId);
     }
 
-
-
+    @PatchMapping(path = "{boardId}")
+    public ResponseEntity<Board> updateBoardTitle(@PathVariable String boardId, @RequestBody String newTitle) {
+        Board updatedBoard = boardService.updateBoardTitle(boardId, newTitle);
+        return ResponseEntity.ok().body(updatedBoard);
+    }
 }

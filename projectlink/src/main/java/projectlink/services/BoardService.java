@@ -104,4 +104,12 @@ public class BoardService {
         }
         return boardRepository.save(board);
     }
+
+    public Board updateBoardTitle(String boardId, String newTitle) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found")
+        );
+        board.setBoardName(newTitle);
+        return boardRepository.save(board);
+    }
 }

@@ -6,11 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-// model 패키지 참조
 import projectlink.models.Board;
 import projectlink.models.BoardList;
 import projectlink.models.Card;
-// services 패키지 참조
 import projectlink.services.BoardListService;
 
 import java.util.List;
