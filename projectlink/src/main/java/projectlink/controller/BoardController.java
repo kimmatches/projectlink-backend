@@ -1,5 +1,6 @@
 package projectlink.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/v1/boards")
+@Tag(name = "BoardController", description = "BoardController")
 @Slf4j
 public class BoardController {
 

@@ -14,8 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import projectlink.models.AppUser;
 import projectlink.repositories.AppUserRepository;
@@ -46,7 +44,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Map<String, String> requestBody = new ObjectMapper().readValue(request.getInputStream(), typeReference);
         String username = requestBody.get("username");
         String password = requestBody.get("password");
-
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         return authenticationManager.authenticate(authenticationToken);
     }
@@ -55,14 +52,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication
     ) throws IOException {
+        User user = (User) authentication.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         String accessToken = JWT.create()
-                .withSubject(authentication.getName())
+                .withSubject(user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
 
-        AppUser appUser = appUserRepository.findByUsername(authentication.getName());
+        AppUser appUser = appUserRepository.findByUsername(user.getUsername());
 
         Map<String, String> sessionDetails = new HashMap<>();
         sessionDetails.put("access_token", accessToken);

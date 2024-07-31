@@ -1,5 +1,6 @@
 package projectlink.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import projectlink.services.CardFileService;
 
 @RestController
 @RequestMapping("/api/v1/cardfiles")
+@Tag(name = "CardFileController", description = "CardFileController")
 public class CardFileController {
 
     @Autowired
