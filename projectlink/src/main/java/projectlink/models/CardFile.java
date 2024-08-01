@@ -16,6 +16,8 @@ public class CardFile {
 
     private String fileName;
     private String fileType;
+
+    @Lob
     private byte[] data;
 
     @ManyToOne(fetch = FetchType.LAZY)
