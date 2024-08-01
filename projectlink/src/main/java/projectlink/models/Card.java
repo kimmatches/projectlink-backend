@@ -102,7 +102,16 @@ public class Card {
     @JoinColumn
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "card", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(
+            mappedBy = "card",
+            cascade = {
+                    CascadeType.DETACH,
+                    CascadeType.REFRESH,
+                    CascadeType.REMOVE
+            },
+            fetch = FetchType.LAZY
+    )
+    @JsonIgnoreProperties("card")
     private Collection<CardFile> cardFiles;
 
 //    @ManyToMany(
